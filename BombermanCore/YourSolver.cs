@@ -71,7 +71,7 @@ namespace Demo
                 DangerPoints.AddRange(PredictChopperPoint);
                 if (Board.IsAt(PlayerPoint, Element.BOMB_BOMBERMAN))
                 {
-                    action = findNearElements(Element.Space).ToString();
+                    action = findNearElements(Element.MEAT_CHOPPER).ToString();
                 }
                 else
                 {
@@ -122,7 +122,7 @@ namespace Demo
                 }
                 if (depth > 1000)
                 {
-                    return Direction.Stop;
+                    return findNearElements(Element.DESTROYABLE_WALL);
                 }
             }
             return findNearElements(Element.DESTROYABLE_WALL);
@@ -168,7 +168,6 @@ namespace Demo
                 }
                 catch (Exception)
                 {
-
                     curentItertation = wayResolvers.First(way => Board.IsNear(way.Point, searchingEl));
                 }
                 
@@ -230,41 +229,6 @@ namespace Demo
             }
             return dangerArea;
 
-
-            //foreach (var beforePointChopper in previousStates)
-            //{
-            //    foreach (var currPoint in currentStates)
-            //    {
-            //        if(beforePointChopper == currPoint)
-
-            //    }
-            //}
-
-
-        }
-
-        private Direction ReverseMove(Direction dir)
-        {
-            switch (dir)
-            {
-                case Direction.Left:
-                    dir = Direction.Right;
-                    break;
-                case Direction.Right:
-                    dir = Direction.Left;
-                    break;
-                case Direction.Up:
-                    dir = Direction.Down;
-                    break;
-                case Direction.Down:
-                    dir = Direction.Up;
-                    break;
-                case Direction.Act:
-                    break;
-                case Direction.Stop:
-                    break;
-            }
-            return dir;
         }
 
     }
