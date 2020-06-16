@@ -35,7 +35,7 @@ namespace Bomberman.Api
     {
         private const string _responsePrefix = "board=";
 
-        private const int _maxRetriesCount = 3;
+        private const int _maxRetriesCount = int.MaxValue;
 
         private const int _retriestTimeoutInMilliseconds = 10000;
 

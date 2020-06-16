@@ -41,9 +41,11 @@ namespace Demo
             Task.Run(bot.Play);
 
 
-
+            while (true)
+            {
+                Console.ReadLine();
+            }
             // on any key - asking AI client to stop.
-            bot.InitiateExit();
         }
     }
 }

@@ -138,7 +138,6 @@ namespace Bomberman.Api
                 .Concat(GetWalls())
                 .Concat(GetBombs())
                 .Concat(GetDestroyableWalls())
-                .Concat(GetOtherBombermans())
                 .Distinct()
                 .ToList();
         }
@@ -201,9 +200,10 @@ namespace Bomberman.Api
             return Get(Element.BOOM);
         }
 
-        public List<Point> GetFutureBlasts()
+        public List<Point> GetFutureBlasts(Point predictedBombs = new Point())
         {
             var bombs = GetBombs();
+            bombs.Add(predictedBombs);
             var result = new List<Point>();
             foreach (var bomb in bombs)
             {
@@ -212,6 +212,15 @@ namespace Bomberman.Api
                 result.Add(bomb.ShiftRight());
                 result.Add(bomb.ShiftTop());
                 result.Add(bomb.ShiftBottom());
+
+                result.Add(bomb.ShiftLeft(2));
+                result.Add(bomb.ShiftRight(2));
+                result.Add(bomb.ShiftTop(2));
+                result.Add(bomb.ShiftBottom(2));
+                result.Add(bomb.ShiftLeft(3));
+                result.Add(bomb.ShiftRight(3));
+                result.Add(bomb.ShiftTop(3));
+                result.Add(bomb.ShiftBottom(3));
             }
 
             return result.Where(blast => !blast.IsOutOf(Size) && !GetWalls().Contains(blast)).Distinct().ToList();
