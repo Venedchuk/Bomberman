@@ -59,10 +59,6 @@
       <Project>{26b1ae94-cb40-411a-8a64-84285e395780}</Project>
       <Name>Bomberman.Api</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Demo\Demo.csproj">
-      <Project>{1527129c-c326-49e6-b53f-9e662baf81fb}</Project>
-      <Name>Demo</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

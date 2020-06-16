@@ -19,28 +19,31 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-using Bomberman.Api;
+using System;
+using System.Threading.Tasks;
 
 namespace Demo
 {
-    /// <summary>
-    /// This is BombermanAI client demo.
-    /// </summary>
-    internal class YourSolver : AbstractSolver
+    class Program
     {
-        public YourSolver(string server)
-            : base(server)
-        {            
-        }
 
+        // you can get this code after registration on the server with your email
+        static string ServerUrl = "https://botchallenge.cloud.epam.com/codenjoy-contest/board/player/kvvudnc60ffdxqy57qzv?code=6906722433409743364";
 
-        /// <summary>
-        /// Calls each move to make decision what to do (next move)
-        /// </summary>
-        protected override string Get(Board board)
+        static void Main(string[] args)
         {
-            var action = Direction.Act.ToString();            
-            return action;
+            Console.SetWindowSize(Console.LargestWindowWidth - 3, Console.LargestWindowHeight - 3);
+
+            // creating custom AI client
+            var bot = new YourSolver(ServerUrl);
+
+            // starting thread with playing game
+            Task.Run(bot.Play);
+
+
+
+            // on any key - asking AI client to stop.
+            bot.InitiateExit();
         }
     }
 }
