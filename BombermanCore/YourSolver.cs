@@ -188,7 +188,7 @@ namespace Demo
 
                     Direction firstDir = getReverseWay(wayResolvers, searchingEl, dirlist);
                     trueWay.AddRange(dirlist);
-                    if (dirlist.Count() == 1 && searchingEl == Element.OTHER_BOMBERMAN && Board.IsNear(PlayerPoint, Element.OTHER_BOMBERMAN))
+                    if (dirlist.Count() == 1 && (searchingEl == Element.OTHER_BOMBERMAN || searchingEl == Element.OTHER_BOMBERMAN) && Board.IsNear(PlayerPoint, Element.OTHER_BOMBERMAN))
                     {
                         FoundWayToBomberman = false;
                         return dirlist[0];
