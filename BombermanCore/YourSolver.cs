@@ -139,7 +139,7 @@ namespace Demo
                 DangerPoints = new List<Point>();
                 Barriers = new List<Point>();
             }
-            
+
             return action;
         }
         string exitTwo = string.Empty;
@@ -166,6 +166,19 @@ namespace Demo
 
         }
 
+        public void Shuffle<T>(List<T> list)
+        {
+            Random rng = new Random();
+            int n = list.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = rng.Next(n + 1);
+                T value = list[k];
+                list[k] = list[n];
+                list[n] = value;
+            }
+        }
         private Direction lookAround(Element searchingEl, List<WayResolver> wayResolvers)
         {
             List<Direction> dirlist = new List<Direction>();
@@ -175,10 +188,35 @@ namespace Demo
             for (int i = 0; i < wayResolvers.Count(); i++)
             {
                 var nextPoint = wayResolvers[i];
-                Checkside(nextPoint.Point.ShiftRight(), Direction.Right, searchingEl, wayResolvers);
-                Checkside(nextPoint.Point.ShiftLeft(), Direction.Left, searchingEl, wayResolvers);
-                Checkside(nextPoint.Point.ShiftTop(), Direction.Up, searchingEl, wayResolvers);
-                Checkside(nextPoint.Point.ShiftBottom(), Direction.Down, searchingEl, wayResolvers);
+                var list = new List<int>() { 0, 1, 2, 3 };
+                Shuffle<int>(list);
+
+                foreach (var item in list)
+                {
+
+
+                    switch (item)
+                    {
+                        case 0:
+                            Checkside(nextPoint.Point.ShiftRight(), Direction.Right, searchingEl, wayResolvers);
+                            break;
+                        case 1:
+                            Checkside(nextPoint.Point.ShiftLeft(), Direction.Left, searchingEl, wayResolvers);
+                            break;
+                        case 2:
+                            Checkside(nextPoint.Point.ShiftTop(), Direction.Up, searchingEl, wayResolvers);
+                            break;
+                        case 3:
+                            Checkside(nextPoint.Point.ShiftBottom(), Direction.Down, searchingEl, wayResolvers);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                
+                
+               
+                
                 if (wayResolvers.Any(way => way.isSafe && way.isDestination))
                 {
                     safe++;
