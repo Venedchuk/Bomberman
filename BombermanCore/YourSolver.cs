@@ -55,6 +55,7 @@ namespace Demo
             {
                 Board = board;
                 Barriers = board.GetBarrier();
+
                 try
                 {
                     PlayerPoint = board.GetBomberman();
@@ -64,27 +65,32 @@ namespace Demo
 
                     return string.Empty;
                 }
-                
+
                 FutureBlastsPoint = board.GetFutureBlasts();
                 PredictChopperPoint = predictChopper(board.Get(Element.MEAT_CHOPPER));
+                Barriers.AddRange(PredictChopperPoint);
+                Barriers.AddRange(Board.GetOtherBombermans());
+                Barriers.AddRange(Board.GetMeatChoppers());
+                Barriers.AddRange(Board.GetBombs());
                 DangerPoints = FutureBlastsPoint;
                 DangerPoints.AddRange(PredictChopperPoint);
-                if (Board.IsAt(PlayerPoint, Element.BOMB_BOMBERMAN))
+                if (DangerPoints.Contains(PlayerPoint))
                 {
-                    action = findNearElements(Element.MEAT_CHOPPER).ToString();
+                    action = findNearElements(Element.Space).ToString();
                 }
                 else
                 {
                     var dir = findNearElements(Element.OTHER_BOMBERMAN);
                     if (dir != null)
                     {
-                        action = dir.ToString();
-
-                    }
-                    else
-                    {
-                        dir = findNearElements(Element.DESTROYABLE_WALL);
-                        action = dir.ToString();
+                        if (trueWay.Count() > 5)
+                        {
+                            action = Direction.Act.ToString() + dir.ToString();
+                        }
+                        else
+                        {
+                            action = dir.ToString();
+                        }
                     }
                 }
             }
@@ -93,20 +99,33 @@ namespace Demo
 
         private Direction findNearElements(Element element)
         {
-            if (Board.IsNear(PlayerPoint, element)&& (element == Element.OTHER_BOMBERMAN))
+            if (Board.IsNear(PlayerPoint, element) && (element == Element.OTHER_BOMBERMAN))
             {
                 return Direction.Act;
             }
-            List<WayResolver> wayResolvers = new List<WayResolver>() {new WayResolver(PlayerPoint,Direction.Stop) };
-            var waysToTarget = lookAround(element, wayResolvers);
+            List<WayResolver> wayResolvers = new List<WayResolver>() { new WayResolver(PlayerPoint, Direction.Stop) };
+            Direction waysToTarget = Direction.Act;
+            try
+            {
+                waysToTarget = lookAround(element, wayResolvers);
 
+            }
+            catch (Exception ex)
+            {
+                waysToTarget = Direction.Act;
+                Console.WriteLine(ex.Message + ex.StackTrace);
+            }
             return waysToTarget;
+
+
         }
 
         private Direction lookAround(Element searchingEl, List<WayResolver> wayResolvers)
         {
             List<Direction> dirlist = new List<Direction>();
+            trueWay = new List<Direction>();
             depth = 0;
+            int safe = 0;
             for (int i = 0; i < wayResolvers.Count(); i++)
             {
                 var nextPoint = wayResolvers[i];
@@ -114,42 +133,58 @@ namespace Demo
                 Checkside(nextPoint.Point.ShiftLeft(), Direction.Left, searchingEl, wayResolvers);
                 Checkside(nextPoint.Point.ShiftTop(), Direction.Up, searchingEl, wayResolvers);
                 Checkside(nextPoint.Point.ShiftBottom(), Direction.Down, searchingEl, wayResolvers);
-                if (wayResolvers.Any(way => way.isDestination))
+
+                if (wayResolvers.Any(way => way.isDestination && way.isSafe && !DangerPoints.Contains(way.Point)))
                 {
 
                     Direction firstDir = getReverseWay(wayResolvers, searchingEl, dirlist);
+                    trueWay.AddRange(dirlist);
                     return firstDir;
                 }
-                if (depth > 1000)
+                if (depth > 900)
                 {
-                    return findNearElements(Element.DESTROYABLE_WALL);
+                    {
+                        if (DangerPoints.Contains(PlayerPoint))
+                        {
+                            return findNearElements(Element.Space);
+                        }
+                        else
+                        {
+                            return findNearElements(Element.DESTROYABLE_WALL);
+                            return Direction.Stop;
+                        }
+                        //return findNearElements(Element.DESTROYABLE_WALL);
+                    }
                 }
             }
-            return findNearElements(Element.DESTROYABLE_WALL);
+            //here run to safe
+            return Direction.Act;
 
         }
-      
+
+        List<Direction> trueWay = new List<Direction>();
         private void Checkside(Point checkedPoint, Direction dir, Element searchingEl, List<WayResolver> wayResolvers)
         {
             if (!checkedPoint.IsOutOf(Board.Size))
             {
                 if (!Barriers.Contains(checkedPoint) && !wayResolvers.Any(x => x.Point == checkedPoint))
                 {
-                    WayResolver way = new WayResolver(checkedPoint, dir);
                     {
-                        if (Board.IsNear(checkedPoint, searchingEl))
+                        WayResolver way = new WayResolver(checkedPoint, dir);
                         {
-                            way.isDestination = true;
+                            if (Board.IsNear(checkedPoint, searchingEl))
+                            {
+                                way.isDestination = true;
+                            }
+                            if (!DangerPoints.Contains(checkedPoint))
+                            {
+                                way.isSafe = true;
+                            }
+                            if (!wayResolvers.Any(x => x.Point == way.Point))
+                            {
+                                wayResolvers.Add(way);
+                            }
                         }
-                        if (!DangerPoints.Contains(checkedPoint))
-                        {
-                            way.isSafe = true;
-                        }
-                        if (!wayResolvers.Any(x => x.Point == way.Point))
-                        {
-                            wayResolvers.Add(way);
-                        }
-                        
                     }
                 }
                 depth++;
@@ -170,7 +205,7 @@ namespace Demo
                 {
                     curentItertation = wayResolvers.First(way => Board.IsNear(way.Point, searchingEl));
                 }
-                
+
                 lastspot = curentItertation;
             }
             switch (curentItertation.Direction)
@@ -189,7 +224,7 @@ namespace Demo
                     break;
                 default:
                     break;
-                    
+
             }
             if (curentItertation.Point != wayResolvers.First().Point)
             {
