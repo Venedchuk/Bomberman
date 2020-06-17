@@ -43,7 +43,7 @@ namespace Demo
         List<Point> DangerPoints;
         List<Point> Barriers;
         Board Board;
-
+        int recurcive = 0;
 
         /// <summary>
         /// Calls each move to make decision what to do (next move)
@@ -53,6 +53,7 @@ namespace Demo
             var action = string.Empty;
             if (!board.isMyBombermanDead)
             {
+                recurcive = 0;
                 Board = board;
                 Barriers = board.GetBarrier();
 
@@ -77,10 +78,37 @@ namespace Demo
                 if (DangerPoints.Contains(PlayerPoint))
                 {
                     action = findNearElements(Element.Space).ToString();
+                    
                 }
                 else
                 {
                     var dir = findNearElements(Element.OTHER_BOMBERMAN);
+                    Point nextPoint = new Point();
+                    switch (dir)
+                    {
+                        case Direction.Left:
+                            nextPoint = PlayerPoint.ShiftLeft();
+                            break;
+                        case Direction.Right:
+                            nextPoint = PlayerPoint.ShiftRight();
+                            break;
+                        case Direction.Up:
+                            nextPoint = PlayerPoint.ShiftTop();
+                            break;
+                        case Direction.Down:
+                            nextPoint = PlayerPoint.ShiftBottom();
+                            break;
+                        case Direction.Act:
+                            break;
+                        case Direction.Stop:
+                            break;
+                        default:
+                            break;
+                    }
+                    if(FutureBlastsPoint.Contains(nextPoint))
+                    {
+                        dir = Direction.Stop;
+                    }
                     if (dir != null)
                     {
                         if (trueWay.Count() > 5)
@@ -94,12 +122,20 @@ namespace Demo
                     }
                 }
             }
+            else
+            {
+                FutureBlastsPoint = new List<Point>();
+                LastChopperPoint = new List<Point>();
+                PredictChopperPoint = new List<Point>();
+                DangerPoints = new List<Point>();
+                Barriers = new List<Point>();
+            }
             return action;
         }
 
         private Direction findNearElements(Element element)
         {
-            if (Board.IsNear(PlayerPoint, element) && (element == Element.OTHER_BOMBERMAN))
+            if (Board.IsNear(PlayerPoint, element) && ((element == Element.OTHER_BOMBERMAN)||(element == Element.DESTROYABLE_WALL)))
             {
                 return Direction.Act;
             }
@@ -133,32 +169,43 @@ namespace Demo
                 Checkside(nextPoint.Point.ShiftLeft(), Direction.Left, searchingEl, wayResolvers);
                 Checkside(nextPoint.Point.ShiftTop(), Direction.Up, searchingEl, wayResolvers);
                 Checkside(nextPoint.Point.ShiftBottom(), Direction.Down, searchingEl, wayResolvers);
-
-                if (wayResolvers.Any(way => way.isDestination && way.isSafe && !DangerPoints.Contains(way.Point)))
+                if(wayResolvers.Any(way => way.isSafe && way.isDestination))
+                {
+                    safe++;
+                }
+                if (wayResolvers.Any(way => way.isDestination && way.isSafe && !DangerPoints.Contains(way.Point)&& safe >5))
                 {
 
                     Direction firstDir = getReverseWay(wayResolvers, searchingEl, dirlist);
                     trueWay.AddRange(dirlist);
                     return firstDir;
                 }
-                if (depth > 900)
+                if (depth > 1100)
                 {
                     {
                         if (DangerPoints.Contains(PlayerPoint))
                         {
+                            recurcive++;
+                            if (recurcive > 2)
+                                return Direction.Act;
                             return findNearElements(Element.Space);
                         }
                         else
                         {
+                            recurcive++;
+                            if (recurcive > 2)
+                                return Direction.Act;
                             return findNearElements(Element.DESTROYABLE_WALL);
-                            return Direction.Stop;
                         }
                         //return findNearElements(Element.DESTROYABLE_WALL);
                     }
                 }
             }
             //here run to safe
-            return Direction.Act;
+            recurcive++;
+            if (recurcive > 2)
+                return Direction.Act;
+            return findNearElements(Element.Space);
 
         }
 
@@ -203,7 +250,8 @@ namespace Demo
                 }
                 catch (Exception)
                 {
-                    curentItertation = wayResolvers.First(way => Board.IsNear(way.Point, searchingEl));
+                    curentItertation = new WayResolver(PlayerPoint,Direction.Stop);
+                    //curentItertation = wayResolvers.First(way => Board.IsNear(way.Point, searchingEl));
                 }
 
                 lastspot = curentItertation;

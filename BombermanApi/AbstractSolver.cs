@@ -127,7 +127,17 @@ namespace Bomberman.Api
                     Console.SetCursorPosition(0, 0);
                     Console.WriteLine(board.ToString());
 
-                    var action = Get(board);
+                    var action = string.Empty;
+                        try
+                    {
+                        action =  Get(board);
+                    }
+                    catch (Exception)
+                    {
+
+                        action = Get(board);
+                    }
+                   
 
                     Console.WriteLine("Answer: " + action);
                     Console.SetCursorPosition(0, 0);
