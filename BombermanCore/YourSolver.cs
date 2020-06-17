@@ -44,7 +44,7 @@ namespace Demo
         List<Point> Barriers;
         Board Board;
         int recurcive = 0;
-
+        bool FoundWayToBomberman = true;
         /// <summary>
         /// Calls each move to make decision what to do (next move)
         /// </summary>
@@ -78,11 +78,20 @@ namespace Demo
                 if (DangerPoints.Contains(PlayerPoint))
                 {
                     action = findNearElements(Element.Space).ToString();
-                    
+
                 }
                 else
                 {
-                    var dir = findNearElements(Element.OTHER_BOMBERMAN);
+                    var dir = Direction.Act;
+                    if (FoundWayToBomberman)
+                    {
+                        dir = findNearElements(Element.OTHER_BOMBERMAN);
+                    }
+                    else
+                    {
+                        dir = findNearElements(Element.DESTROYABLE_WALL);
+                    }
+
                     Point nextPoint = new Point();
                     switch (dir)
                     {
@@ -105,7 +114,7 @@ namespace Demo
                         default:
                             break;
                     }
-                    if(FutureBlastsPoint.Contains(nextPoint))
+                    if (FutureBlastsPoint.Contains(nextPoint))
                     {
                         dir = Direction.Stop;
                     }
@@ -130,12 +139,13 @@ namespace Demo
                 DangerPoints = new List<Point>();
                 Barriers = new List<Point>();
             }
+            
             return action;
         }
-
+        string exitTwo = string.Empty;
         private Direction findNearElements(Element element)
         {
-            if (Board.IsNear(PlayerPoint, element) && ((element == Element.OTHER_BOMBERMAN)||(element == Element.DESTROYABLE_WALL)))
+            if (Board.IsNear(PlayerPoint, element) && ((element == Element.OTHER_BOMBERMAN) || (element == Element.DESTROYABLE_WALL)))
             {
                 return Direction.Act;
             }
@@ -169,15 +179,26 @@ namespace Demo
                 Checkside(nextPoint.Point.ShiftLeft(), Direction.Left, searchingEl, wayResolvers);
                 Checkside(nextPoint.Point.ShiftTop(), Direction.Up, searchingEl, wayResolvers);
                 Checkside(nextPoint.Point.ShiftBottom(), Direction.Down, searchingEl, wayResolvers);
-                if(wayResolvers.Any(way => way.isSafe && way.isDestination))
+                if (wayResolvers.Any(way => way.isSafe && way.isDestination))
                 {
                     safe++;
                 }
-                if (wayResolvers.Any(way => way.isDestination && way.isSafe && !DangerPoints.Contains(way.Point)&& safe >5))
+                if (wayResolvers.Any(way => way.isDestination && way.isSafe && !DangerPoints.Contains(way.Point) && safe > 5))
                 {
 
                     Direction firstDir = getReverseWay(wayResolvers, searchingEl, dirlist);
                     trueWay.AddRange(dirlist);
+                    if (dirlist.Count() == 1 && searchingEl == Element.OTHER_BOMBERMAN && Board.IsNear(PlayerPoint, Element.OTHER_BOMBERMAN))
+                    {
+                        FoundWayToBomberman = false;
+                        return dirlist[0];
+
+                    }
+                    else
+                    {
+                        FoundWayToBomberman = true;
+                    }
+
                     return firstDir;
                 }
                 if (depth > 1100)
@@ -185,6 +206,7 @@ namespace Demo
                     {
                         if (DangerPoints.Contains(PlayerPoint))
                         {
+                            FoundWayToBomberman = false;
                             recurcive++;
                             if (recurcive > 2)
                                 return Direction.Act;
@@ -192,6 +214,7 @@ namespace Demo
                         }
                         else
                         {
+                            FoundWayToBomberman = false;
                             recurcive++;
                             if (recurcive > 2)
                                 return Direction.Act;
@@ -202,6 +225,7 @@ namespace Demo
                 }
             }
             //here run to safe
+            FoundWayToBomberman = true;
             recurcive++;
             if (recurcive > 2)
                 return Direction.Act;
@@ -250,7 +274,7 @@ namespace Demo
                 }
                 catch (Exception)
                 {
-                    curentItertation = new WayResolver(PlayerPoint,Direction.Stop);
+                    curentItertation = new WayResolver(PlayerPoint, Direction.Stop);
                     //curentItertation = wayResolvers.First(way => Board.IsNear(way.Point, searchingEl));
                 }
 
