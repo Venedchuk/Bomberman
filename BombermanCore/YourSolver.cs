@@ -38,8 +38,9 @@ namespace Demo
         int depth = 0;
         Point PlayerPoint;
         List<Point> FutureBlastsPoint;
-        List<Point> LastChopperPoint;
+        List<Point> LastChopperPoint = new List<Point>();
         List<Point> PredictChopperPoint;
+        List<Point> PredictChopperPointTrue;
         List<Point> DangerPoints;
         List<Point> Barriers;
         Board Board;
@@ -50,11 +51,15 @@ namespace Demo
         /// </summary>
         protected override string Get(Board board)
         {
-            FoundWayToBomberman = true;
+
 
             var action = string.Empty;
             if (!board.isMyBombermanDead)
             {
+                FoundWayToBomberman = true;
+
+
+
                 recurcive = 0;
                 Board = board;
                 Barriers = board.GetBarrier();
@@ -136,12 +141,12 @@ namespace Demo
             else
             {
                 FutureBlastsPoint = new List<Point>();
-                LastChopperPoint = new List<Point>();
+
                 PredictChopperPoint = new List<Point>();
                 DangerPoints = new List<Point>();
                 Barriers = new List<Point>();
             }
-
+            LastChopperPoint = Board.GetMeatChoppers();
             return action;
         }
         string exitTwo = string.Empty;
@@ -215,10 +220,10 @@ namespace Demo
                             break;
                     }
                 }
-                
-                
-               
-                
+
+
+
+
                 if (wayResolvers.Any(way => way.isSafe && way.isDestination))
                 {
                     safe++;
@@ -235,7 +240,7 @@ namespace Demo
                             FoundWayToBomberman = false;
                             return firstDir;
                         }
-                       
+
 
                     }
                     else
@@ -369,14 +374,62 @@ namespace Demo
         }
 
 
-        private List<Point> predictChopper(List<Point> currentStates)
+        private List<Point> predictChopper(List<Point> currentChopperPoint)
         {
             //TO DO predict with previous state
 
             var dangerArea = new List<Point>();
-            foreach (var item in currentStates)
+            foreach (var item in currentChopperPoint)
             {
-                dangerArea.Add(item);
+                foreach (var lastPoint in LastChopperPoint)
+                {
+                    if (lastPoint.ShiftBottom() == item)
+                    {
+                        if (Barriers.Contains(item.ShiftBottom()))
+                        {
+                            dangerArea.Add(item.ShiftTop()); 
+                        }
+                        else
+                        {
+                            dangerArea.Add(item.ShiftBottom());
+                        }
+                    }
+                    if (lastPoint.ShiftTop() == item)
+                    {
+                        if (Barriers.Contains(item.ShiftTop()))
+                        {
+                            dangerArea.Add(item.ShiftBottom());
+                        }
+                        else
+                        {
+                            dangerArea.Add(item.ShiftTop());
+                        }
+                    }
+                    if (lastPoint.ShiftLeft() == item)
+                    {
+                        if (Barriers.Contains(item.ShiftLeft()))
+                        {
+                            dangerArea.Add(item.ShiftRight());
+                        }
+                        else
+                        {
+                            dangerArea.Add(item.ShiftLeft());
+                        }
+                    }
+                    if (lastPoint.ShiftRight() == item)
+                    {
+                        if (Barriers.Contains(item.ShiftRight()))
+                        {
+                            Barriers.Add(item.ShiftLeft());
+                        }
+                        else
+                        {
+                            dangerArea.Add(item.ShiftRight());
+                        }
+                    }
+                }
+
+                //dangerArea.Add(item);
                 //dangerArea.Add(item.ShiftBottom());
                 //dangerArea.Add(item.ShiftLeft());
                 //dangerArea.Add(item.ShiftRight());
