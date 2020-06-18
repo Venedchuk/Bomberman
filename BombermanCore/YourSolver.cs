@@ -50,6 +50,8 @@ namespace Demo
         /// </summary>
         protected override string Get(Board board)
         {
+            FoundWayToBomberman = true;
+
             var action = string.Empty;
             if (!board.isMyBombermanDead)
             {
@@ -228,8 +230,12 @@ namespace Demo
                     trueWay.AddRange(dirlist);
                     if (dirlist.Count() <= 1 && (searchingEl == Element.Space || searchingEl == Element.OTHER_BOMBERMAN) && Board.IsNear(PlayerPoint, Element.OTHER_BOMBERMAN))
                     {
-                        FoundWayToBomberman = false;
-                        return firstDir;
+                        if (searchingEl != Element.OTHER_BOMBERMAN)
+                        {
+                            FoundWayToBomberman = false;
+                            return firstDir;
+                        }
+                       
 
                     }
                     else
@@ -371,10 +377,10 @@ namespace Demo
             foreach (var item in currentStates)
             {
                 dangerArea.Add(item);
-                dangerArea.Add(item.ShiftBottom());
-                dangerArea.Add(item.ShiftLeft());
-                dangerArea.Add(item.ShiftRight());
-                dangerArea.Add(item.ShiftTop());
+                //dangerArea.Add(item.ShiftBottom());
+                //dangerArea.Add(item.ShiftLeft());
+                //dangerArea.Add(item.ShiftRight());
+                //dangerArea.Add(item.ShiftTop());
             }
             return dangerArea;
 
