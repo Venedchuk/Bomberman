@@ -387,11 +387,13 @@ namespace Demo
                     {
                         if (Barriers.Contains(item.ShiftBottom()))
                         {
-                            dangerArea.Add(item.ShiftTop()); 
+                            dangerArea.Add(item.ShiftTop());
+                            dangerArea.Add(item);
                         }
                         else
                         {
                             dangerArea.Add(item.ShiftBottom());
+                            dangerArea.Add(item);
                         }
                     }
                     if (lastPoint.ShiftTop() == item)
@@ -399,10 +401,12 @@ namespace Demo
                         if (Barriers.Contains(item.ShiftTop()))
                         {
                             dangerArea.Add(item.ShiftBottom());
+                            dangerArea.Add(item);
                         }
                         else
                         {
                             dangerArea.Add(item.ShiftTop());
+                            dangerArea.Add(item);
                         }
                     }
                     if (lastPoint.ShiftLeft() == item)
@@ -410,10 +414,12 @@ namespace Demo
                         if (Barriers.Contains(item.ShiftLeft()))
                         {
                             dangerArea.Add(item.ShiftRight());
+                            dangerArea.Add(item);
                         }
                         else
                         {
                             dangerArea.Add(item.ShiftLeft());
+                            dangerArea.Add(item);
                         }
                     }
                     if (lastPoint.ShiftRight() == item)
@@ -421,10 +427,12 @@ namespace Demo
                         if (Barriers.Contains(item.ShiftRight()))
                         {
                             Barriers.Add(item.ShiftLeft());
+                            dangerArea.Add(item);
                         }
                         else
                         {
                             dangerArea.Add(item.ShiftRight());
+                            dangerArea.Add(item);
                         }
                     }
                 }

@@ -137,6 +137,7 @@ namespace Bomberman.Api
             return 
                 GetWalls()
                 .Concat(GetBombs())
+                .Concat(GetMeatChoppers())
                 .Concat(GetDestroyableWalls())
                 .Distinct()
                 .ToList();
