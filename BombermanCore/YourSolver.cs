@@ -135,7 +135,7 @@ namespace Demo
                     }
                     if (dir != null)
                     {
-                        if (trueWay.Count() > 5)
+                        if (trueWay.Count() > 5 && Board.IsDestroyableNear(PlayerPoint))
                         {
                             action = Direction.Act.ToString() + dir.ToString();
                         }
@@ -154,10 +154,24 @@ namespace Demo
                 DangerPoints = new List<Point>();
                 Barriers = new List<Point>();
             }
+            if(action == Direction.Act.ToString())
+            {
+                FutureBlastsPoint = Board.GetFutureBlasts(PlayerPoint);
+                Barriers.AddRange(Board.GetBombs(PlayerPoint));
+                DangerPoints = FutureBlastsPoint;
+                action += findNearElements(Element.OTHER_BOMBERMAN);
+            }
+
+
+
+
+
             LastChopperPoint = Board.GetMeatChoppers();
 
             return action;
         }
+
+
         string exitTwo = string.Empty;
         private Direction findNearElements(Element element)
         {
@@ -291,7 +305,7 @@ namespace Demo
             recurcive++;
             if (recurcive > 2)
                 return Direction.Act;
-            return findNearElements(Element.DESTROYABLE_WALL);
+            return findNearElements(Element.Space);
 
         }
 

@@ -35,7 +35,7 @@ namespace Bomberman.Api
         {
             BoardString = boardString.Replace("\n", "");
             LengthXY = new LengthToXY(Size);
-        }        
+        }
 
         /// <summary>
         /// GameBoard size (actual board size is Size x Size cells)
@@ -107,24 +107,24 @@ namespace Bomberman.Api
         /// </summary>
         public string ToString()
         {
-           return string.Format("{0}\n" +
-                    "Bomberman at: {1}\n" +
-                    "Other bombermans at: {2}\n" +
-                    "Meat choppers at: {3}\n" +
-                    "Destroy walls at: {4}\n" +
-                    "Bombs at: {5}\n" +
-                    "Blasts: {6}\n" +
-                    "Expected blasts at: {7}\n" +
-                    "Perks at: {8}",
-                    BoardAsString(),
-                    GetBomberman(),
-                    ListToString(GetOtherBombermans()),
-                    ListToString(GetMeatChoppers()),
-                    ListToString(GetDestroyableWalls()),
-                    ListToString(GetBombs()),
-                    ListToString(GetBlasts()),
-                    ListToString(GetFutureBlasts()),
-                    ListToString(GetPerks()));
+            return string.Format("{0}\n" +
+                     "Bomberman at: {1}\n" +
+                     "Other bombermans at: {2}\n" +
+                     "Meat choppers at: {3}\n" +
+                     "Destroy walls at: {4}\n" +
+                     "Bombs at: {5}\n" +
+                     "Blasts: {6}\n" +
+                     "Expected blasts at: {7}\n" +
+                     "Perks at: {8}",
+                     BoardAsString(),
+                     GetBomberman(),
+                     ListToString(GetOtherBombermans()),
+                     ListToString(GetMeatChoppers()),
+                     ListToString(GetDestroyableWalls()),
+                     ListToString(GetBombs()),
+                     ListToString(GetBlasts()),
+                     ListToString(GetFutureBlasts()),
+                     ListToString(GetPerks()));
         }
 
         private string ListToString(List<Point> list)
@@ -134,7 +134,7 @@ namespace Bomberman.Api
 
         public List<Point> GetBarrier()
         {
-            return 
+            return
                 GetWalls()
                 .Concat(GetBombs())
                 .Concat(GetMeatChoppers())
@@ -175,13 +175,16 @@ namespace Bomberman.Api
             return Get(Element.DESTROYABLE_WALL);
         }
 
-        public List<Point> GetBombs()
+        public List<Point> GetBombs(Point FutureBombPoint = new Point())
         {
             return Get(Element.BOMB_TIMER_1)
                 .Concat(Get(Element.BOMB_TIMER_2))
                 .Concat(Get(Element.BOMB_TIMER_3))
+                .Concat(Get(Element.BOMB_TIMER_4))
+                .Concat(Get(Element.BOMB_TIMER_5))
                 .Concat(Get(Element.BOMB_BOMBERMAN))
                 .Concat(Get(Element.OTHER_BOMB_BOMBERMAN))
+                .Append(FutureBombPoint)
                 .ToList();
         }
 
@@ -235,10 +238,113 @@ namespace Bomberman.Api
             if (point.IsOutOf(Size))
                 return false;
 
-            return IsAt(point.ShiftLeft(),   element) ||
-                   IsAt(point.ShiftRight(),  element) ||
-                   IsAt(point.ShiftTop(),    element) ||
+            return IsAt(point.ShiftLeft(), element) ||
+                   IsAt(point.ShiftRight(), element) ||
+                   IsAt(point.ShiftTop(), element) ||
                    IsAt(point.ShiftBottom(), element);
+        }
+        public bool IsDestroyableNear(Point point)
+        {
+            List<Element> enemy = new List<Element>()
+            {
+                Element.DESTROYABLE_WALL,
+                Element.OTHER_BOMBERMAN,
+                Element.MEAT_CHOPPER
+            };
+            if (point.IsOutOf(Size))
+                return false;
+
+            if (!this.IsAt(point.ShiftLeft(1), Element.WALL))
+            {
+                if (enemy.Contains(this.GetAt(point.ShiftLeft(1))))
+                {
+                    return true;
+                }
+                if (!this.IsAt(point.ShiftLeft(2), Element.WALL))
+                {
+                    if (enemy.Contains(this.GetAt(point.ShiftLeft(2))))
+                    {
+                        return true;
+                    }
+
+                    if (!this.IsAt(point.ShiftLeft(3), Element.WALL))
+                    {
+                        if (enemy.Contains(this.GetAt(point.ShiftLeft(3))))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            if (!this.IsAt(point.ShiftRight(1), Element.WALL))
+            {
+                if (enemy.Contains(this.GetAt(point.ShiftRight(1))))
+                {
+                    return true;
+                }
+                if (!this.IsAt(point.ShiftRight(2), Element.WALL))
+                {
+                    if (enemy.Contains(this.GetAt(point.ShiftRight(2))))
+                    {
+                        return true;
+                    }
+
+                    if (!this.IsAt(point.ShiftRight(3), Element.WALL))
+                    {
+                        if (enemy.Contains(this.GetAt(point.ShiftRight(3))))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            if (!this.IsAt(point.ShiftTop(1), Element.WALL))
+            {
+                if (enemy.Contains(this.GetAt(point.ShiftTop(1))))
+                {
+                    return true;
+                }
+                if (!this.IsAt(point.ShiftTop(2), Element.WALL))
+                {
+                    if (enemy.Contains(this.GetAt(point.ShiftTop(2))))
+                    {
+                        return true;
+                    }
+
+                    if (!this.IsAt(point.ShiftTop(3), Element.WALL))
+                    {
+                        if (enemy.Contains(this.GetAt(point.ShiftTop(3))))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            if (!this.IsAt(point.ShiftBottom(1), Element.WALL))
+            {
+                if (enemy.Contains(this.GetAt(point.ShiftBottom(1))))
+                {
+                    return true;
+                }
+                if (!this.IsAt(point.ShiftBottom(2), Element.WALL))
+                {
+                    if (enemy.Contains(this.GetAt(point.ShiftBottom(2))))
+                    {
+                        return true;
+                    }
+
+                    if (!this.IsAt(point.ShiftBottom(3), Element.WALL))
+                    {
+                        if (enemy.Contains(this.GetAt(point.ShiftBottom(3))))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+
         }
 
         public bool IsBarrierAt(Point point)
@@ -252,9 +358,9 @@ namespace Bomberman.Api
                 return 0;
 
             int count = 0;
-            if (IsAt(point.ShiftLeft(),   element)) count++;
-            if (IsAt(point.ShiftRight(),  element)) count++;
-            if (IsAt(point.ShiftTop(),    element)) count++;
+            if (IsAt(point.ShiftLeft(), element)) count++;
+            if (IsAt(point.ShiftRight(), element)) count++;
+            if (IsAt(point.ShiftTop(), element)) count++;
             if (IsAt(point.ShiftBottom(), element)) count++;
             return count;
         }
