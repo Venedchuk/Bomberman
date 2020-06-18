@@ -62,11 +62,11 @@ namespace Demo
 
                 recurcive = 0;
                
-                Barriers = board.GetBarrier();
+                Barriers = Board.GetBarrier();
 
                 try
                 {
-                    PlayerPoint = board.GetBomberman();
+                    PlayerPoint = Board.GetBomberman();
                 }
                 catch (Exception)
                 {
@@ -74,9 +74,10 @@ namespace Demo
                     return string.Empty;
                 }
 
-                FutureBlastsPoint = board.GetFutureBlasts();
-                PredictChopperPoint = predictChopper(board.Get(Element.MEAT_CHOPPER));
+                FutureBlastsPoint = Board.GetFutureBlasts();
+                PredictChopperPoint = predictChopper(Board.Get(Element.MEAT_CHOPPER));
                 Barriers.AddRange(PredictChopperPoint);
+                Barriers.AddRange(Board.Get(Element.BOMB_REMOTE_CONTROL));
                 Barriers.AddRange(Board.GetOtherBombermans());
                 //Barriers.AddRange(Board.GetMeatChoppers());
                 Barriers.AddRange(Board.GetBombs());
@@ -84,8 +85,15 @@ namespace Demo
                 DangerPoints.AddRange(PredictChopperPoint);
                 if (DangerPoints.Contains(PlayerPoint))
                 {
-                    action = findNearElements(Element.Space).ToString();
-
+                    
+                    if (Board.IsNear(PlayerPoint,Element.OTHER_BOMBERMAN))
+                    {
+                        action = Direction.Act.ToString() + findNearElements(Element.Space);
+                    }
+                    else
+                    {
+                        action = findNearElements(Element.Space).ToString();
+                    }
                 }
                 else
                 {
@@ -121,7 +129,7 @@ namespace Demo
                         default:
                             break;
                     }
-                    if (FutureBlastsPoint.Contains(nextPoint))
+                    if (FutureBlastsPoint.Contains(nextPoint) && !DangerPoints.Contains(PlayerPoint))
                     {
                         dir = Direction.Stop;
                     }
@@ -147,6 +155,7 @@ namespace Demo
                 Barriers = new List<Point>();
             }
             LastChopperPoint = Board.GetMeatChoppers();
+
             return action;
         }
         string exitTwo = string.Empty;
