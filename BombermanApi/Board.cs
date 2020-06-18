@@ -134,8 +134,8 @@ namespace Bomberman.Api
 
         public List<Point> GetBarrier()
         {
-            return GetMeatChoppers()
-                .Concat(GetWalls())
+            return 
+                GetWalls()
                 .Concat(GetBombs())
                 .Concat(GetDestroyableWalls())
                 .Distinct()
