@@ -226,15 +226,19 @@ namespace Demo
 
                     Direction firstDir = getReverseWay(wayResolvers, searchingEl, dirlist);
                     trueWay.AddRange(dirlist);
-                    if (dirlist.Count() == 1 && (searchingEl == Element.OTHER_BOMBERMAN || searchingEl == Element.OTHER_BOMBERMAN) && Board.IsNear(PlayerPoint, Element.OTHER_BOMBERMAN))
+                    if (dirlist.Count() <= 1 && (searchingEl == Element.Space || searchingEl == Element.OTHER_BOMBERMAN) && Board.IsNear(PlayerPoint, Element.OTHER_BOMBERMAN))
                     {
                         FoundWayToBomberman = false;
-                        return dirlist[0];
+                        return firstDir;
 
                     }
                     else
                     {
-                        FoundWayToBomberman = true;
+                        if (searchingEl == Element.OTHER_BOMBERMAN)
+                        {
+                            FoundWayToBomberman = true;
+                            return firstDir;
+                        }
                     }
 
                     return firstDir;
@@ -263,7 +267,7 @@ namespace Demo
                 }
             }
             //here run to safe
-            FoundWayToBomberman = true;
+            //FoundWayToBomberman = false;
             recurcive++;
             if (recurcive > 2)
                 return Direction.Act;
