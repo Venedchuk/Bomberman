@@ -52,7 +52,7 @@ namespace Demo
         protected override string Get(Board board)
         {
 
-
+            Board = board;
             var action = string.Empty;
             if (!board.isMyBombermanDead)
             {
@@ -61,7 +61,7 @@ namespace Demo
 
 
                 recurcive = 0;
-                Board = board;
+               
                 Barriers = board.GetBarrier();
 
                 try
@@ -78,7 +78,7 @@ namespace Demo
                 PredictChopperPoint = predictChopper(board.Get(Element.MEAT_CHOPPER));
                 Barriers.AddRange(PredictChopperPoint);
                 Barriers.AddRange(Board.GetOtherBombermans());
-                Barriers.AddRange(Board.GetMeatChoppers());
+                //Barriers.AddRange(Board.GetMeatChoppers());
                 Barriers.AddRange(Board.GetBombs());
                 DangerPoints = FutureBlastsPoint;
                 DangerPoints.AddRange(PredictChopperPoint);
@@ -228,7 +228,7 @@ namespace Demo
                 {
                     safe++;
                 }
-                if (wayResolvers.Any(way => way.isDestination && way.isSafe && !DangerPoints.Contains(way.Point) && safe > 5))
+                if (wayResolvers.Any(way => way.isDestination && way.isSafe && !DangerPoints.Contains(way.Point)))
                 {
 
                     Direction firstDir = getReverseWay(wayResolvers, searchingEl, dirlist);
@@ -282,7 +282,7 @@ namespace Demo
             recurcive++;
             if (recurcive > 2)
                 return Direction.Act;
-            return findNearElements(Element.Space);
+            return findNearElements(Element.DESTROYABLE_WALL);
 
         }
 

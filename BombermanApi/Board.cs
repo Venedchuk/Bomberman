@@ -178,6 +178,7 @@ namespace Bomberman.Api
         {
             return Get(Element.BOMB_TIMER_1)
                 .Concat(Get(Element.BOMB_TIMER_2))
+                .Concat(Get(Element.BOMB_TIMER_3))
                 .Concat(Get(Element.BOMB_BOMBERMAN))
                 .Concat(Get(Element.OTHER_BOMB_BOMBERMAN))
                 .ToList();
