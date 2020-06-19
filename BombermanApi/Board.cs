@@ -136,6 +136,7 @@ namespace Bomberman.Api
         {
             return
                 GetWalls()
+                .Concat(GetOtherBombermans())
                 .Concat(GetBombs())
                 .Concat(GetMeatChoppers())
                 .Concat(GetDestroyableWalls())
@@ -214,15 +215,39 @@ namespace Bomberman.Api
                 result.Add(bomb.ShiftRight());
                 result.Add(bomb.ShiftTop());
                 result.Add(bomb.ShiftBottom());
+                if (!this.IsBarrierAt(bomb.ShiftLeft()))
+                {
+                    result.Add(bomb.ShiftLeft(2));
+                    if (!this.IsBarrierAt(bomb.ShiftLeft(2)))
+                    {
+                        result.Add(bomb.ShiftLeft(3));
+                    }
+                }
 
-                result.Add(bomb.ShiftLeft(2));
-                result.Add(bomb.ShiftRight(2));
-                result.Add(bomb.ShiftTop(2));
-                result.Add(bomb.ShiftBottom(2));
-                result.Add(bomb.ShiftLeft(3));
-                result.Add(bomb.ShiftRight(3));
-                result.Add(bomb.ShiftTop(3));
-                result.Add(bomb.ShiftBottom(3));
+                if (!this.IsBarrierAt(bomb.ShiftRight()))
+                {
+                    result.Add(bomb.ShiftRight(2));
+                    if (!this.IsBarrierAt(bomb.ShiftRight(2)))
+                    {
+                        result.Add(bomb.ShiftRight(3));
+                    }
+                }
+                if (!this.IsBarrierAt(bomb.ShiftTop()))
+                {
+                    result.Add(bomb.ShiftTop(2));
+                    if (!this.IsBarrierAt(bomb.ShiftTop(2)))
+                    {
+                        result.Add(bomb.ShiftTop(3));
+                    }
+                }
+                if (!this.IsBarrierAt(bomb.ShiftBottom()))
+                {
+                    result.Add(bomb.ShiftBottom(2));
+                    if (!this.IsBarrierAt(bomb.ShiftBottom(2)))
+                    {
+                        result.Add(bomb.ShiftBottom(3));
+                    }
+                }
             }
 
             return result.Where(blast => !blast.IsOutOf(Size) && !GetWalls().Contains(blast)).Distinct().ToList();

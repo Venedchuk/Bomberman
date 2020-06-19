@@ -83,10 +83,11 @@ namespace Demo
                 Barriers.AddRange(Board.GetBombs());
                 DangerPoints = FutureBlastsPoint;
                 DangerPoints.AddRange(PredictChopperPoint);
+
                 if (DangerPoints.Contains(PlayerPoint))
                 {
                     
-                    if (Board.IsNear(PlayerPoint,Element.OTHER_BOMBERMAN))
+                    if (Board.IsNear(PlayerPoint,Element.OTHER_BOMBERMAN)|| Board.IsNear(PlayerPoint, Element.OTHER_BOMB_BOMBERMAN))
                     {
                         action = Direction.Act.ToString() + findNearElements(Element.Space);
                     }
@@ -129,13 +130,13 @@ namespace Demo
                         default:
                             break;
                     }
-                    if (FutureBlastsPoint.Contains(nextPoint) && !DangerPoints.Contains(PlayerPoint))
+                    if (DangerPoints.Contains(nextPoint) && !DangerPoints.Contains(PlayerPoint))
                     {
                         dir = Direction.Stop;
                     }
                     if (dir != null)
                     {
-                        if (trueWay.Count() > 5 && Board.IsDestroyableNear(PlayerPoint))
+                        if ((target != Element.OTHER_BOMBERMAN || (trueWay.Count() >  5 && target == Element.OTHER_BOMBERMAN)) && Board.IsDestroyableNear(PlayerPoint))
                         {
                             action = Direction.Act.ToString() + dir.ToString();
                         }
@@ -154,28 +155,25 @@ namespace Demo
                 DangerPoints = new List<Point>();
                 Barriers = new List<Point>();
             }
-            if(action == Direction.Act.ToString())
+            if(action.Contains( Direction.Act.ToString()))
             {
                 FutureBlastsPoint = Board.GetFutureBlasts(PlayerPoint);
-                Barriers.AddRange(Board.GetBombs(PlayerPoint));
+                //Barriers.AddRange(Board.GetBombs(PlayerPoint));
                 DangerPoints = FutureBlastsPoint;
-                action += findNearElements(Element.OTHER_BOMBERMAN);
+                action += findNearElements(Element.Space);
             }
 
-
-
-
-
             LastChopperPoint = Board.GetMeatChoppers();
-
+            Console.WriteLine(Environment.NewLine+ "Target: "+ target.ToString());
             return action;
         }
 
-
+        Element target = Element.Space;
         string exitTwo = string.Empty;
         private Direction findNearElements(Element element)
         {
-            if (Board.IsNear(PlayerPoint, element) && ((element == Element.OTHER_BOMBERMAN) || (element == Element.DESTROYABLE_WALL)))
+            target = element;
+            if (Board.IsNear(PlayerPoint, element) && ((element == Element.OTHER_BOMBERMAN) || (element == Element.DESTROYABLE_WALL)||(element == Element.OTHER_BOMB_BOMBERMAN)))
             {
                 return Direction.Act;
             }
@@ -243,14 +241,6 @@ namespace Demo
                             break;
                     }
                 }
-
-
-
-
-                if (wayResolvers.Any(way => way.isSafe && way.isDestination))
-                {
-                    safe++;
-                }
                 if (wayResolvers.Any(way => way.isDestination && way.isSafe && !DangerPoints.Contains(way.Point)))
                 {
 
@@ -305,7 +295,7 @@ namespace Demo
             recurcive++;
             if (recurcive > 2)
                 return Direction.Act;
-            return findNearElements(Element.Space);
+            return findNearElements(Element.DESTROYABLE_WALL);
 
         }
 
