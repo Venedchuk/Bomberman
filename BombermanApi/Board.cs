@@ -136,7 +136,6 @@ namespace Bomberman.Api
         {
             return
                 GetWalls()
-                .Concat(GetOtherBombermans())
                 .Concat(GetBombs())
                 .Concat(GetMeatChoppers())
                 .Concat(GetDestroyableWalls())
@@ -146,7 +145,7 @@ namespace Bomberman.Api
 
         public List<Point> GetMeatChoppers()
         {
-            return Get(Element.MEAT_CHOPPER);
+            return Get(Element.MEAT_CHOPPER).Concat(Get(Element.DeadMeatChopper)).ToList();
         }
 
         public List<Point> Get(Element element)

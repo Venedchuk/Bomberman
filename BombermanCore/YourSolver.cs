@@ -75,10 +75,9 @@ namespace Demo
                 }
 
                 FutureBlastsPoint = Board.GetFutureBlasts();
-                PredictChopperPoint = predictChopper(Board.Get(Element.MEAT_CHOPPER));
+                PredictChopperPoint = predictChopper(Board.Get(Element.MEAT_CHOPPER).Concat(Board.Get(Element.DeadMeatChopper)).ToList());
                 Barriers.AddRange(PredictChopperPoint);
                 Barriers.AddRange(Board.Get(Element.BOMB_REMOTE_CONTROL));
-                Barriers.AddRange(Board.GetOtherBombermans());
                 //Barriers.AddRange(Board.GetMeatChoppers());
                 Barriers.AddRange(Board.GetBombs());
                 DangerPoints = FutureBlastsPoint;
@@ -93,7 +92,14 @@ namespace Demo
                     }
                     else
                     {
-                        action = findNearElements(Element.Space).ToString();
+                        if (Board.IsNear(PlayerPoint, Element.BOMB_BOMBERMAN))
+                        {
+                            action = findNearElements(Element.Space).ToString();
+                        }
+                        else
+                        {
+                            action = findNearElements(Element.Space).ToString();
+                        }
                     }
                 }
                 else
@@ -155,7 +161,7 @@ namespace Demo
                 DangerPoints = new List<Point>();
                 Barriers = new List<Point>();
             }
-            if(action.Contains( Direction.Act.ToString()))
+            if(action == Direction.Act.ToString())
             {
                 FutureBlastsPoint = Board.GetFutureBlasts(PlayerPoint);
                 //Barriers.AddRange(Board.GetBombs(PlayerPoint));
@@ -177,7 +183,13 @@ namespace Demo
             {
                 return Direction.Act;
             }
-            List<WayResolver> wayResolvers = new List<WayResolver>() { new WayResolver(PlayerPoint, Direction.Stop) };
+            var firsWay = new WayResolver(PlayerPoint, Direction.Stop);
+            List<WayResolver> wayResolvers = new List<WayResolver>() {  };
+            if (!DangerPoints.Contains(PlayerPoint))
+            {
+                firsWay.isSafe = true;
+            }
+            wayResolvers.Add(firsWay);
             Direction waysToTarget = Direction.Act;
             try
             {
@@ -267,7 +279,7 @@ namespace Demo
 
                     return firstDir;
                 }
-                if (depth > 1100)
+                if (depth > 2000)
                 {
                     {
                         if (DangerPoints.Contains(PlayerPoint))
@@ -293,8 +305,9 @@ namespace Demo
             //here run to safe
             //FoundWayToBomberman = false;
             recurcive++;
-            if (recurcive > 2)
+            if (recurcive > 5)
                 return Direction.Act;
+            FoundWayToBomberman = false;
             return findNearElements(Element.DESTROYABLE_WALL);
 
         }
@@ -304,16 +317,16 @@ namespace Demo
         {
             if (!checkedPoint.IsOutOf(Board.Size))
             {
-                if (!Barriers.Contains(checkedPoint) && !wayResolvers.Any(x => x.Point == checkedPoint))
+                if ((!Barriers.Contains(checkedPoint) || (searchingEl == Element.DESTROYABLE_WALL && Board.IsNear(checkedPoint, searchingEl))) && !wayResolvers.Any(x => x.Point == checkedPoint))
                 {
                     {
                         WayResolver way = new WayResolver(checkedPoint, dir);
                         {
-                            if (Board.IsNear(checkedPoint, searchingEl))
+                            if (Board.IsAt(checkedPoint, searchingEl) || (searchingEl == Element.DESTROYABLE_WALL && Board.IsNear(checkedPoint, searchingEl)))
                             {
                                 way.isDestination = true;
                             }
-                            if (!DangerPoints.Contains(checkedPoint))
+                            if (!DangerPoints.Contains(checkedPoint) || (searchingEl == Element.DESTROYABLE_WALL && Board.IsNear(checkedPoint, searchingEl)))
                             {
                                 way.isSafe = true;
                             }
@@ -336,12 +349,11 @@ namespace Demo
             {
                 try
                 {
-                    curentItertation = wayResolvers.First(way => Board.IsNear(way.Point, searchingEl) && way.isSafe);
+                    curentItertation = wayResolvers.First(way => Board.IsAt(way.Point, searchingEl) && way.isSafe);
                 }
                 catch (Exception)
                 {
                     curentItertation = new WayResolver(PlayerPoint, Direction.Stop);
-                    //curentItertation = wayResolvers.First(way => Board.IsNear(way.Point, searchingEl));
                 }
 
                 lastspot = curentItertation;
