@@ -33,7 +33,7 @@ namespace Demo
         static void Main(string[] args)
         {
             //Console.SetWindowSize(Console.LargestWindowWidth - 3, Console.LargestWindowHeight - 3);
-
+            Console.WriteLine("Alt");
             // creating custom AI client
             var bot = new YourSolver(ServerUrl);
 
