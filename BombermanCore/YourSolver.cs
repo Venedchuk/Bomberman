@@ -75,7 +75,7 @@ namespace Demo
                 }
 
                 FutureBlastsPoint = Board.GetFutureBlasts();
-                PredictChopperPoint = predictChopper(Board.Get(Element.MEAT_CHOPPER).Concat(Board.Get(Element.DeadMeatChopper)).ToList());
+                PredictChopperPoint = predictChopper(Board.Get(Element.MEAT_CHOPPER), Board.Get(Element.DeadMeatChopper));
                 Barriers.AddRange(PredictChopperPoint);
                 Barriers.AddRange(Board.Get(Element.BOMB_REMOTE_CONTROL));
                 //Barriers.AddRange(Board.GetMeatChoppers());
@@ -349,11 +349,26 @@ namespace Demo
             {
                 try
                 {
-                    curentItertation = wayResolvers.First(way => Board.IsAt(way.Point, searchingEl) && way.isSafe);
+                    if (searchingEl == Element.DESTROYABLE_WALL)
+                    {
+                        curentItertation = wayResolvers.First(way => Board.IsNear(way.Point, searchingEl) && way.isSafe);
+                    }
+                    else
+                    {
+                        curentItertation = wayResolvers.First(way => Board.IsAt(way.Point, searchingEl) && way.isSafe);
+                    }
                 }
                 catch (Exception)
                 {
                     curentItertation = new WayResolver(PlayerPoint, Direction.Stop);
+                    if (!DangerPoints.Contains(PlayerPoint))
+                    {
+                        curentItertation.isSafe = true;
+                    }
+                    if (Board.IsAt(PlayerPoint, searchingEl))
+                    {
+                        curentItertation.isDestination = true;
+                    }
                 }
 
                 lastspot = curentItertation;
@@ -399,7 +414,7 @@ namespace Demo
         }
 
 
-        private List<Point> predictChopper(List<Point> currentChopperPoint)
+        private List<Point> predictChopper(List<Point> currentChopperPoint, List<Point> currentZombieChopperPoint)
         {
             //TO DO predict with previous state
 
@@ -461,12 +476,15 @@ namespace Demo
                         }
                     }
                 }
+                foreach (var itemZ in currentZombieChopperPoint)
+                {
+                    dangerArea.Add(itemZ);
+                    dangerArea.Add(itemZ.ShiftBottom());
+                    dangerArea.Add(itemZ.ShiftLeft());
+                    dangerArea.Add(itemZ.ShiftRight());
+                    dangerArea.Add(itemZ.ShiftTop());
+                }
 
-                //dangerArea.Add(item);
-                //dangerArea.Add(item.ShiftBottom());
-                //dangerArea.Add(item.ShiftLeft());
-                //dangerArea.Add(item.ShiftRight());
-                //dangerArea.Add(item.ShiftTop());
             }
             return dangerArea;
 
