@@ -46,6 +46,7 @@ namespace Demo
         Board Board;
         int recurcive = 0;
         bool FoundWayToBomberman = true;
+        Point nextPoint = new Point();
         /// <summary>
         /// Calls each move to make decision what to do (next move)
         /// </summary>
@@ -88,6 +89,8 @@ namespace Demo
                     
                     if (Board.IsNear(PlayerPoint,Element.OTHER_BOMBERMAN)|| Board.IsNear(PlayerPoint, Element.OTHER_BOMB_BOMBERMAN))
                     {
+                        FutureBlastsPoint = Board.GetFutureBlasts(PlayerPoint);
+                        DangerPoints = FutureBlastsPoint;
                         action = Direction.Act.ToString() + findNearElements(Element.Space);
                     }
                     else
@@ -98,7 +101,7 @@ namespace Demo
                         }
                         else
                         {
-                            action = findNearElements(Element.Space).ToString();
+                            action = findNearElements(Element.MEAT_CHOPPER).ToString();
                         }
                     }
                 }
@@ -111,10 +114,10 @@ namespace Demo
                     }
                     else
                     {
-                        dir = findNearElements(Element.DESTROYABLE_WALL);
+                        dir = findNearElements(Element.MEAT_CHOPPER);
                     }
 
-                    Point nextPoint = new Point();
+                    
                     switch (dir)
                     {
                         case Direction.Left:
@@ -144,7 +147,7 @@ namespace Demo
                     {
                         if ((target != Element.OTHER_BOMBERMAN || (trueWay.Count() >  5 && target == Element.OTHER_BOMBERMAN)) && Board.IsDestroyableNear(PlayerPoint))
                         {
-                            action = Direction.Act.ToString() + dir.ToString();
+                            action =/* Direction.Act.ToString() + */dir.ToString();
                         }
                         else
                         {
@@ -166,9 +169,45 @@ namespace Demo
                 FutureBlastsPoint = Board.GetFutureBlasts(PlayerPoint);
                 //Barriers.AddRange(Board.GetBombs(PlayerPoint));
                 DangerPoints = FutureBlastsPoint;
-                action += findNearElements(Element.Space);
+                action = Direction.Act.ToString()+ findNearElements(Element.Space);
+            }
+            else
+            {
+                if (Board.IsDestroyableNear(PlayerPoint))
+                {
+                    action += Direction.Act.ToString();
+                }
             }
 
+            var act = action.Replace(Direction.Act.ToString(), string.Empty);
+            if (!string.IsNullOrEmpty(act)) {
+                var dirLast = (Direction)Enum.Parse(typeof(Direction), act);
+                switch (dirLast)
+                {
+                    case Direction.Left:
+                        nextPoint = PlayerPoint.ShiftLeft();
+                        break;
+                    case Direction.Right:
+                        nextPoint = PlayerPoint.ShiftRight();
+                        break;
+                    case Direction.Up:
+                        nextPoint = PlayerPoint.ShiftTop();
+                        break;
+                    case Direction.Down:
+                        nextPoint = PlayerPoint.ShiftBottom();
+                        break;
+                    case Direction.Act:
+                        break;
+                    case Direction.Stop:
+                        break;
+                    default:
+                        break;
+                }
+                if (DangerPoints.Contains(nextPoint) && !DangerPoints.Contains(PlayerPoint))
+                {
+                    action = Direction.Stop.ToString();
+                } 
+            }
             LastChopperPoint = Board.GetMeatChoppers();
             Console.WriteLine(Environment.NewLine+ "Target: "+ target.ToString());
             return action;
@@ -308,7 +347,7 @@ namespace Demo
             if (recurcive > 5)
                 return Direction.Act;
             FoundWayToBomberman = false;
-            return findNearElements(Element.DESTROYABLE_WALL);
+            return findNearElements(Element.MEAT_CHOPPER);
 
         }
 

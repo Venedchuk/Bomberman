@@ -277,25 +277,26 @@ namespace Bomberman.Api
             };
             if (point.IsOutOf(Size))
                 return false;
+            bool desicion = false;
 
             if (!this.IsAt(point.ShiftLeft(1), Element.WALL))
             {
                 if (enemy.Contains(this.GetAt(point.ShiftLeft(1))))
                 {
-                    return true;
+                    desicion = true;
                 }
                 if (!this.IsAt(point.ShiftLeft(2), Element.WALL))
                 {
                     if (enemy.Contains(this.GetAt(point.ShiftLeft(2))))
                     {
-                        return true;
+                        desicion = true;
                     }
 
                     if (!this.IsAt(point.ShiftLeft(3), Element.WALL))
                     {
                         if (enemy.Contains(this.GetAt(point.ShiftLeft(3))))
                         {
-                            return true;
+                            desicion = true;
                         }
                     }
                 }
@@ -304,20 +305,20 @@ namespace Bomberman.Api
             {
                 if (enemy.Contains(this.GetAt(point.ShiftRight(1))))
                 {
-                    return true;
+                    desicion = true;
                 }
                 if (!this.IsAt(point.ShiftRight(2), Element.WALL))
                 {
                     if (enemy.Contains(this.GetAt(point.ShiftRight(2))))
                     {
-                        return true;
+                        desicion = true;
                     }
 
                     if (!this.IsAt(point.ShiftRight(3), Element.WALL))
                     {
                         if (enemy.Contains(this.GetAt(point.ShiftRight(3))))
                         {
-                            return true;
+                            desicion = true;
                         }
                     }
                 }
@@ -326,20 +327,20 @@ namespace Bomberman.Api
             {
                 if (enemy.Contains(this.GetAt(point.ShiftTop(1))))
                 {
-                    return true;
+                    desicion = true;
                 }
                 if (!this.IsAt(point.ShiftTop(2), Element.WALL))
                 {
                     if (enemy.Contains(this.GetAt(point.ShiftTop(2))))
                     {
-                        return true;
+                        desicion = true;
                     }
 
                     if (!this.IsAt(point.ShiftTop(3), Element.WALL))
                     {
                         if (enemy.Contains(this.GetAt(point.ShiftTop(3))))
                         {
-                            return true;
+                            desicion = true;
                         }
                     }
                 }
@@ -348,27 +349,124 @@ namespace Bomberman.Api
             {
                 if (enemy.Contains(this.GetAt(point.ShiftBottom(1))))
                 {
-                    return true;
+                    desicion = true;
                 }
                 if (!this.IsAt(point.ShiftBottom(2), Element.WALL))
                 {
                     if (enemy.Contains(this.GetAt(point.ShiftBottom(2))))
                     {
-                        return true;
+                        desicion = true;
                     }
 
                     if (!this.IsAt(point.ShiftBottom(3), Element.WALL))
                     {
                         if (enemy.Contains(this.GetAt(point.ShiftBottom(3))))
                         {
-                            return true;
+                            desicion = true;
+                        }
+                    }
+                }
+            }
+            var percsPoint = GetPerks();
+            bool BonusContain = false;
+
+            //help me
+
+            if (!this.IsAt(point.ShiftLeft(1), Element.WALL))
+            {
+                if (percsPoint.Contains(point.ShiftLeft(1)))
+                {
+                    BonusContain = true;
+                }
+                if (!this.IsAt(point.ShiftLeft(2), Element.WALL))
+                {
+                    if (percsPoint.Contains((point.ShiftLeft(2))))
+                    {
+                        BonusContain = true;
+                    }
+
+                    if (!this.IsAt(point.ShiftLeft(3), Element.WALL))
+                    {
+                        if (percsPoint.Contains((point.ShiftLeft(3))))
+                        {
+                            BonusContain = true;
+                        }
+                    }
+                }
+            }
+            if (!this.IsAt(point.ShiftRight(1), Element.WALL))
+            {
+                if (percsPoint.Contains((point.ShiftRight(1))))
+                {
+                    BonusContain = true;
+                }
+                if (!this.IsAt(point.ShiftRight(2), Element.WALL))
+                {
+                    if (percsPoint.Contains((point.ShiftRight(2))))
+                    {
+                        BonusContain = true;
+                    }
+
+                    if (!this.IsAt(point.ShiftRight(3), Element.WALL))
+                    {
+                        if (percsPoint.Contains((point.ShiftRight(3))))
+                        {
+                            BonusContain = true;
+                        }
+                    }
+                }
+            }
+            if (!this.IsAt(point.ShiftTop(1), Element.WALL))
+            {
+                if (percsPoint.Contains((point.ShiftTop(1))))
+                {
+                    BonusContain = true;
+                }
+                if (!this.IsAt(point.ShiftTop(2), Element.WALL))
+                {
+                    if (percsPoint.Contains((point.ShiftTop(2))))
+                    {
+                        BonusContain = true;
+                    }
+
+                    if (!this.IsAt(point.ShiftTop(3), Element.WALL))
+                    {
+                        if (percsPoint.Contains((point.ShiftTop(3))))
+                        {
+                            BonusContain = true;
+                        }
+                    }
+                }
+            }
+            if (!this.IsAt(point.ShiftBottom(1), Element.WALL))
+            {
+                if (percsPoint.Contains((point.ShiftBottom(1))))
+                {
+                    BonusContain = true;
+                }
+                if (!this.IsAt(point.ShiftBottom(2), Element.WALL))
+                {
+                    if (percsPoint.Contains((point.ShiftBottom(2))))
+                    {
+                        BonusContain = true;
+                    }
+
+                    if (!this.IsAt(point.ShiftBottom(3), Element.WALL))
+                    {
+                        if (percsPoint.Contains((point.ShiftBottom(3))))
+                        {
+                            BonusContain = true;
                         }
                     }
                 }
             }
 
+            if (!BonusContain)
+            {
+                return desicion;
+            }
             return false;
-
+            
         }
 
         public bool IsBarrierAt(Point point)
