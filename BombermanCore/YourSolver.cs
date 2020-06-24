@@ -95,14 +95,10 @@ namespace Demo
                     }
                     else
                     {
-                        if (Board.IsNear(PlayerPoint, Element.BOMB_BOMBERMAN))
-                        {
+                        //if stuck need run
+
                             action = findNearElements(Element.Space).ToString();
-                        }
-                        else
-                        {
-                            action = findNearElements(Element.MEAT_CHOPPER).ToString();
-                        }
+
                     }
                 }
                 else
@@ -173,9 +169,9 @@ namespace Demo
             }
             else
             {
-                if (Board.IsDestroyableNear(PlayerPoint))
+                if (Board.IsDestroyableNear(PlayerPoint) && trueWay.Count()>4)
                 {
-                    action += Direction.Act.ToString();
+                    action = Direction.Act.ToString()+action;
                 }
             }
 
@@ -347,7 +343,7 @@ namespace Demo
             if (recurcive > 5)
                 return Direction.Act;
             FoundWayToBomberman = false;
-            return findNearElements(Element.MEAT_CHOPPER);
+            return findNearElements(Element.Space);
 
         }
 
